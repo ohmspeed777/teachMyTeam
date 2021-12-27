@@ -72,6 +72,23 @@ app.patch('/api/v1/hero/:id', async (req, res, next) => {
   }
 });
 
+app.delete('/api/v1/hero/:id', async (req, res, next) => {
+  // db.hero.deleteOne({})
+   // db.hero.deleteMany({})
+  try {
+    await Hero.findByIdAndDelete(req.params.id)
+    res.status(204).json({
+      status: 'success',
+      hero: null,
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: 'error',
+      error,
+    });
+  }
+})
+
 mongoose
   .connect(process.env.MONGO_DB)
   .then(() => console.log('Connecting to database successfully'))
