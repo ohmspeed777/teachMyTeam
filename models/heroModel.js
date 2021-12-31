@@ -4,6 +4,7 @@ const hero = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'Hero must have a name'],
+    unique: true,
   },
   atk: {
     type: Number,
@@ -18,24 +19,24 @@ const hero = new mongoose.Schema({
   },
   def: {
     type: Number,
-    default: 100
+    default: 100,
   },
   skill: {
     passive: {
-      type: String
+      type: String,
     },
     ultimate: {
-      type: String
+      type: String,
     },
     first: String,
-    second: String
+    second: String,
   },
   createDate: {
     type: Date,
-    default: new Date()
-  }
+    default: new Date(),
+  },
 });
 
-const Hero = mongoose.model('hero', hero)
+const Hero = mongoose.model('hero', hero);
 
-module.exports = Hero
+module.exports = Hero;

@@ -2,10 +2,13 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
+
 // load config file
 dotenv.config({ path: 'config.env' });
 
+const errorMiddleware = require('./middleware/errorMiddleware')
 const heroRouter = require('./routes/heroRoute');
+const AppError = require('./utility/AppError');
 
 const app = express();
 
@@ -13,7 +16,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res, next) => {
-  next(new Error('This is error'));
+  next(new AppError('This is error', 500));
 });
 
 app.use('/api/v1/hero', heroRouter);
@@ -25,13 +28,7 @@ app.all('*', (req, res, next) => {
   });
 });
 
-app.use((err, req, res, next) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'this is error middleware',
-    err,
-  });
-});
+app.use(errorMiddleware);
 
 mongoose
   .connect(process.env.MONGO_DB)

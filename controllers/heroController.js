@@ -10,10 +10,7 @@ exports.createHero = async (req, res, next) => {
       hero,
     });
   } catch (error) {
-    res.status(400).json({
-      status: 'error',
-      error,
-    });
+    next(error)
   }
 };
 
@@ -28,10 +25,7 @@ exports.getAllHero = async (req, res, next) => {
       hero,
     });
   } catch (error) {
-    res.status(400).json({
-      status: 'error',
-      error,
-    });
+    next(error)
   }
 };
 
@@ -43,10 +37,7 @@ exports.getOneHero = async (req, res, next) => {
       hero,
     });
   } catch (error) {
-    res.status(400).json({
-      status: 'error',
-      error,
-    });
+    next(error)
   }
 };
 
@@ -62,10 +53,7 @@ exports.updateHero = async (req, res, next) => {
       hero,
     });
   } catch (error) {
-    res.status(400).json({
-      status: 'error',
-      error,
-    });
+    next(error)
   }
 };
 
@@ -79,10 +67,7 @@ exports.deleteHero = async (req, res, next) => {
       hero: null,
     });
   } catch (error) {
-    res.status(400).json({
-      status: 'error',
-      error,
-    });
+    next(error)
   }
 };
 
