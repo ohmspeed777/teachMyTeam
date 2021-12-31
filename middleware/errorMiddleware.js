@@ -8,15 +8,15 @@ const sendError = (err, req, res) => {
     });
   }
 
-  return res.status(err.statusCode).json({
-    status: 'error',
-    message: 'Something went wrong',
-  });
-
   // return res.status(err.statusCode).json({
   //   status: 'error',
-  //   message: err,
+  //   message: 'Something went wrong',
   // });
+
+  return res.status(err.statusCode).json({
+    status: 'error',
+    message: err,
+  });
 };
 
 const handleCastErrorMonDB = (err) => {
@@ -33,6 +33,14 @@ const handleDuplicateFieldMonDB = (err) => {
 const handleValidateErrorMonDB = (err) => {
   const errors = Object.values(err.errors).map((el) => el.message);
   const message = `Invalid input data. ${errors.join(', ')}`;
+  return new AppError(message, 400);
+};
+
+const handleJoiValidate = (err) => {
+  const message = err.ownError.details
+    .map((el) => el.message.replaceAll(/\"/g, ''))
+    .join('/n');
+
   return new AppError(message, 400);
 };
 
@@ -53,6 +61,10 @@ module.exports = (err, req, res, next) => {
 
   if (err._message && err.errors) {
     error = handleValidateErrorMonDB(err);
+  }
+
+  if (err.name === 'joi') {
+    error = handleJoiValidate(err);
   }
 
   sendError(error, req, res);

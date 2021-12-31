@@ -1,75 +1,48 @@
 const Hero = require('../models/heroModel');
+const tryCatch = require('../utility/tryCatch');
 
-exports.createHero = async (req, res, next) => {
-  // db.hero.insert({})
-  // db.hero.insertMany([{}, {}])
-  try {
-    const hero = await Hero.create(req.body);
-    res.status(201).json({
-      status: 'success',
-      hero,
-    });
-  } catch (error) {
-    next(error)
-  }
-};
+exports.createHero = tryCatch(async (req, res, next) => {
+  const hero = await Hero.create(req.body);
+  res.status(201).json({
+    status: 'success',
+    hero,
+  });
+});
 
-exports.getAllHero = async (req, res, next) => {
-  // db.hero.find()
-  // db.hero.findOne()
-  try {
-    const hero = await Hero.find();
-    res.status(201).json({
-      status: 'success',
-      result: hero.length,
-      hero,
-    });
-  } catch (error) {
-    next(error)
-  }
-};
+exports.getAllHero = tryCatch(async (req, res, next) => {
+  const hero = await Hero.find();
+  res.status(201).json({
+    status: 'success',
+    result: hero.length,
+    hero,
+  });
+});
 
-exports.getOneHero = async (req, res, next) => {
-  try {
-    const hero = await Hero.findById(req.params.id);
-    res.status(200).json({
-      status: 'success',
-      hero,
-    });
-  } catch (error) {
-    next(error)
-  }
-};
+exports.getOneHero = tryCatch(async (req, res, next) => {
+  const hero = await Hero.findById(req.params.id);
+  res.status(200).json({
+    status: 'success',
+    hero,
+  });
+});
 
-exports.updateHero = async (req, res, next) => {
-  // db.hero.updateOne({}, {})
-  // db.hero.updateMany({}, {})
-  try {
-    const hero = await Hero.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    res.status(200).json({
-      status: 'success',
-      hero,
-    });
-  } catch (error) {
-    next(error)
-  }
-};
+exports.updateHero = tryCatch(async (req, res, next) => {
+  const hero = await Hero.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
+  res.status(200).json({
+    status: 'success',
+    hero,
+  });
+});
 
-exports.deleteHero = async (req, res, next) => {
-  // db.hero.deleteOne({})
-  // db.hero.deleteMany({})
-  try {
-    await Hero.findByIdAndDelete(req.params.id);
-    res.status(204).json({
-      status: 'success',
-      hero: null,
-    });
-  } catch (error) {
-    next(error)
-  }
-};
+exports.deleteHero = tryCatch(async (req, res, next) => {
+  await Hero.findByIdAndDelete(req.params.id);
+  res.status(204).json({
+    status: 'success',
+    hero: null,
+  });
+});
 
 exports.testHeroQuery = async (req, res, next) => {
   try {
@@ -85,7 +58,7 @@ exports.testHeroQuery = async (req, res, next) => {
       .sort('-name')
       .limit(5)
       .skip(5);
-      
+
     res.status(200).json({
       result: hero.length,
       status: 'success',

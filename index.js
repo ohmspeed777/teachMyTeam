@@ -2,13 +2,14 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 
-
 // load config file
 dotenv.config({ path: 'config.env' });
 
-const errorMiddleware = require('./middleware/errorMiddleware')
-const heroRouter = require('./routes/heroRoute');
+const errorMiddleware = require('./middleware/errorMiddleware');
 const AppError = require('./utility/AppError');
+
+const heroRouter = require('./routes/heroRoute');
+const userRouter = require('./routes/userRoute');
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.get('/', (req, res, next) => {
 });
 
 app.use('/api/v1/hero', heroRouter);
+app.use('/api/v1/user', userRouter);
 
 app.all('*', (req, res, next) => {
   res.status(404).json({
