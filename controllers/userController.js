@@ -1,25 +1,12 @@
 const User = require('../models/userModel');
 const tryCatch = require('../utility/tryCatch');
-const Joi = require('joi');
 const AppError = require('../utility/AppError');
-const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
-const hashPassword = async (password) => {
-  return await bcrypt.hash(password, 12);
-};
+const { signUpReq, signInReq } = require('../validator/request/userRequest');
 
 exports.signUp = tryCatch(async (req, res, next) => {
-  const reqSchema = Joi.object({
-    username: Joi.string().required().example('ohm'),
-    email: Joi.string().email().required().example('test@gmail.com'),
-    password: Joi.string().required().valid('12345678'),
-  });
-
-  const reqBody = await reqSchema
-    .validateAsync(req.body)
-    .catch((err) => next(new AppError('', 400, 'joi', err)));
-
-  reqBody.password = await hashPassword(reqBody.password);
+  const reqBody = await signUpReq(req.body, next);
 
   const user = await User.create(reqBody);
   user.password = undefined;
@@ -27,5 +14,27 @@ exports.signUp = tryCatch(async (req, res, next) => {
   res.status(201).json({
     status: 'success',
     user,
+  });
+});
+
+exports.signIn = tryCatch(async (req, res, next) => {
+  const reqBody = await signInReq(req.body, next);
+
+  const user = await User.findOne({ username: reqBody.username }).select(
+    '+password'
+  );
+
+  if (!user || !(await user.checkPassword(reqBody.password, user.password))) {
+    return next(new AppError('Incorrect username or password', 401));
+  }
+
+  const token = jwt.sign({ id: user._id }, process.env.JWT_KEY, {
+    expiresIn: process.env.JWT_EXP,
+  });
+
+  res.json({
+    status: 'success',
+    user,
+    token,
   });
 });
