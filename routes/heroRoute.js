@@ -1,12 +1,13 @@
 const express = require('express');
 const heroController = require('../controllers/heroController');
+const { protect, restrict } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
 router
   .route('/')
-  .post(heroController.createHero)
-  .get(heroController.getAllHero)
+  .post(protect, restrict('gm'), heroController.createHero)
+  .get(protect, heroController.getAllHero)
   .put(heroController.testHeroQuery);
 
 router

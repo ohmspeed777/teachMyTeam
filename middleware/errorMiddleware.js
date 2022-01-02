@@ -44,6 +44,12 @@ const handleJoiValidate = (err) => {
   return new AppError(message, 400);
 };
 
+const handlerJWTError = () =>
+  new AppError('Invalid token. Please log again!', 401);
+
+const handlerTokenExpiredError = () =>
+  new AppError('Your token has expired! Please log in again.', 401);
+
 module.exports = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
@@ -65,6 +71,14 @@ module.exports = (err, req, res, next) => {
 
   if (err.name === 'joi') {
     error = handleJoiValidate(err);
+  }
+
+  if (err.name === 'JsonWebTokenError') {
+    error = handlerJWTError();
+  }
+
+  if (err.name === 'TokenExpiredError') {
+    error = handlerTokenExpiredError();
   }
 
   sendError(error, req, res);

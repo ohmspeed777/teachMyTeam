@@ -1,8 +1,10 @@
 const Joi = require('joi');
 const AppError = require('../../utility/AppError');
 
-const handleErrorValidate = (err, next) => {
-  next(new AppError('', 400, 'joi', err));
+const handleErrorValidate = (cb) => {
+  return async (body, next) => {
+    await cb(body).catch((err) => next(new AppError('', 400, 'joi', err)));
+  };
 };
 
 exports.signUpReq = async (body, next) => {
@@ -12,9 +14,13 @@ exports.signUpReq = async (body, next) => {
     password: Joi.string().required().valid('12345678'),
   });
 
+  // return await schema
+  //   .validateAsync(body)
+  //   .catch((err) => next(new AppError('', 400, 'joi', err)));
+  // return await handleErrorValidate(schema.validateAsync)(body, next);
   return await schema
     .validateAsync(body)
-    .catch((err) => handleErrorValidate(err, next));
+    .catch((err) => next(new AppError('', 400, 'joi', err)));
 };
 
 exports.signInReq = async (body, next) => {
@@ -25,5 +31,5 @@ exports.signInReq = async (body, next) => {
 
   return await schema
     .validateAsync(body)
-    .catch((err) => handleErrorValidate(err, next));
+    .catch((err) => next(new AppError('', 400, 'joi', err)));
 };
