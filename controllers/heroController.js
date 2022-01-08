@@ -10,6 +10,10 @@ exports.createHero = tryCatch(async (req, res, next) => {
 });
 
 exports.getAllHero = tryCatch(async (req, res, next) => {
+  console.log(req.query.atk);
+  // {
+  //   atk: 400
+  // }
   const hero = await Hero.find();
   res.status(201).json({
     status: 'success',
@@ -53,11 +57,36 @@ exports.testHeroQuery = async (req, res, next) => {
     // const hero = await Hero.find().select('-_id -__v');
     // const hero = await Hero.find().limit(5).skip(3);
     // const hero = await Hero.find().sort('-name')
-    const hero = await Hero.find({ def: { $gt: 100 } })
-      .select('-_id -__v')
-      .sort('-name')
+    // const hero = await Hero.find({ def: { $gt: 100 } })
+    //   .select('-_id -__v')
+    //   .sort('-name')
+    //   .limit(5)
+    //   .skip(5);
+
+    await Hero.find({ def: { $gt: 210 } })
       .limit(5)
-      .skip(5);
+      .sort({ name: -1 });
+
+    // const hero = await Hero.aggregate([
+    //   {
+    //     $match: { def: { $gt: 210 } },
+    //   },
+    //   {
+    //     $project: { name: 1 },
+    //   },
+    //   {
+    //     $sort: { name: -1 },
+    //   },
+    //   {
+    //     $skip: 3,
+    //   },
+    //   {
+    //     $limit: 5,
+    //   },
+    // ]);
+    // const hero = await Hero.aggregate([
+    //   { $replaceRoot: { newRoot: '$skill' } },
+    // ]);
 
     res.status(200).json({
       result: hero.length,

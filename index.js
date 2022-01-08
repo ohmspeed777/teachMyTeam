@@ -10,6 +10,7 @@ const AppError = require('./utility/AppError');
 
 const heroRouter = require('./routes/heroRoute');
 const userRouter = require('./routes/userRoute');
+const orderRouter = require('./routes/orderRoute')
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.get('/', (req, res, next) => {
 
 app.use('/api/v1/hero', heroRouter);
 app.use('/api/v1/user', userRouter);
+app.use('/api/v1/order', orderRouter);
 
 app.all('*', (req, res, next) => {
   res.status(404).json({
