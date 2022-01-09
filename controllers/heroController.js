@@ -10,15 +10,32 @@ exports.createHero = tryCatch(async (req, res, next) => {
 });
 
 exports.getAllHero = tryCatch(async (req, res, next) => {
-  console.log(req.query.atk);
-  // {
-  //   atk: 400
-  // }
-  const hero = await Hero.find();
-  res.status(201).json({
+  const filter = { ...req.query };
+  const excludedFields = ['page', 'sort', 'limit'];
+
+  excludedFields.forEach((el) => delete filter[el]);
+
+  let sort = 'name';
+  if (req.query.sort) {
+    sort = req.query.sort.split(',').join(' ');
+  }
+
+  const page = +req.query.page || 1;
+  const limit = +req.query.limit || 10;
+  const skip = (page - 1) * limit;
+
+  const hero = await Hero.find(filter).sort(sort).skip(skip).limit(limit);
+  const count = await Hero.find(filter).count();
+
+  const totalPages = Math.ceil(count / limit);
+
+  res.status(200).json({
     status: 'success',
     result: hero.length,
     hero,
+    page,
+    limit,
+    totalPages,
   });
 });
 
